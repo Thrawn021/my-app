@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070b14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Траун">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Траун: наставник</title>
+<style>
+:root{--bg:#070b14;--panel:#0f1626;--line:#22314f;--ink:#dfe8f7;--dim:#8497b8;--blue:#4aa3ff;--red:#ff3b30;--ok:#47d38a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070b14;--panel:#0f1626;--ink:#dfe8f7}}
+:root[data-theme="dark"]{--bg:#070b14;--panel:#0f1626;--ink:#dfe8f7}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:21px;margin:0;font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+#rank{font-size:14px;color:var(--blue)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:8px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;width:50%;background:var(--blue);transition:width .5s,background .5s}
+.cap{font-size:12px;color:var(--dim);margin:0 0 14px}
+#log{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;min-height:240px;display:flex;flex-direction:column;gap:10px}
+.b{border-left:3px solid var(--blue);padding:2px 0 2px 12px;font-size:17px}
+.b.bad{border-left-color:var(--red)}.b.good{border-left-color:var(--ok)}
+.b.me{border-left:0;border-right:3px solid var(--dim);padding:2px 12px 2px 0;text-align:right;color:var(--dim);font-size:15px}
+#opts{display:grid;gap:8px;margin-top:10px;min-height:52px}
+#opts button{background:transparent;color:var(--ink);border:1px solid var(--blue);border-radius:6px;padding:13px;font:inherit;text-align:left;cursor:pointer;min-height:48px}
+#opts button:active{background:var(--line)}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.stats{display:flex;gap:16px;font-size:14px;color:var(--dim);margin:12px 0 0}
+.stats b{color:var(--ink)}
+h2{font-size:17px;margin:20px 0 8px;font-weight:600}
+.ex{display:flex;width:100%;justify-content:space-between;align-items:center;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:13px;margin-bottom:8px;font:inherit;text-align:left;cursor:pointer;min-height:52px}
+.ex small{color:var(--dim);font-size:14px}
+.ex.on{border-color:var(--ok);color:var(--dim)}
+.ex.on::after{content:"✓";color:var(--ok)}
+.fr{display:grid;gap:6px}.frr{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:15px}.frr.me{border-color:var(--blue)}.frr small{color:var(--dim);font-size:13px}.frr i{font-style:normal;color:var(--ok)}
+.set input,.set textarea{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit;font-size:16px;margin:4px 0 10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.two button{background:transparent;color:var(--ink);border:1px solid var(--blue);border-radius:6px;padding:12px;font:inherit;cursor:pointer;min-height:46px}
+.ob{width:100%;background:transparent;color:var(--ink);border:1px solid var(--blue);border-radius:6px;padding:12px;font:inherit;cursor:pointer;min-height:46px;margin:4px 0}
+.rm{background:none;border:0;color:var(--dim);text-decoration:underline;font:inherit;font-size:12px;cursor:pointer;padding:4px}
+.shake{animation:s .4s}
+@keyframes s{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+.reset{margin-top:18px;background:none;border:0;color:var(--dim);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:8px}
+.tip{font-size:13px;color:var(--dim);margin-top:14px}
+.say{display:flex;gap:8px;margin-top:10px}.say input{flex:1;min-width:0;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px;font:inherit;font-size:16px}.say button{background:var(--blue);color:#06101f;border:0;border-radius:6px;padding:0 16px;font:inherit;cursor:pointer;min-height:48px}
+.push{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:13px}.push b{font-size:28px;color:var(--blue)}.push .bar{margin:8px 0}
+.pbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pbtns button{background:transparent;color:var(--ink);border:1px solid var(--blue);border-radius:6px;padding:12px 0;font:inherit;cursor:pointer;min-height:48px}.pbtns button:active{background:var(--line)}
+</style>
+</head>
+<body>
+<main id="app">
+<div class="row"><h1>Гранд-адмирал Траун</h1><span id="rank"></span></div>
+<div class="bar"><i id="fill"></i></div>
+<p class="cap">Его уважение к тебе. Падает от пропусков и лифтов, растёт от дела.</p>
+<p class="cap" id="xp"></p>
+<div id="log" aria-live="polite"></div>
+<div id="opts"></div>
+<div class="say"><input id="txt" type="text" placeholder="Напиши Трауну…" autocomplete="off"><button id="send">Сказать</button></div>
+<div class="stats"><span>Серия: <b id="sStreak">0</b></span><span>Лестниц: <b id="sStairs">0</b></span><span>Лифтов: <b id="sLift">0</b></span><span>Пропусков: <b id="sSkip">0</b></span></div>
+<h2>План на сегодня</h2>
+<div id="plan"></div>
+<h2>Друзья</h2>
+<div id="friends" class="fr"></div>
+<div class="set">
+<button id="shcode" class="ob">Отправить другу мой код</button>
+<textarea id="codebox" rows="3" placeholder="Сюда вставь сообщение с кодом от друга"></textarea>
+<button id="okcode" class="ob">Добавить друга по коду</button>
+<span class="cap" id="codemsg"></span>
+</div>
+<h2>Мои настройки</h2>
+<div class="set">
+<label class="cap" for="nick">Твоё имя для друзей</label>
+<input id="nick" type="text" maxlength="20" autocomplete="off" placeholder="Например, Аня">
+<label class="cap" for="cplan">Мой план: по одному упражнению в строке, формат «название|подробности»</label>
+<textarea id="cplan" rows="7"></textarea>
+<div class="two"><button id="saveplan">Сохранить мой план</button><button id="resetplan">Стандартный план</button></div>
+<button id="histbtn" class="reset">Вся история разговора</button>
+</div>
+<p class="tip">Чтобы поставить на телефон: в Safari нажми «Поделиться» и «На экран Домой», в Chrome открой меню и выбери «Добавить на главный экран».</p>
+<button class="reset" id="reset">Сбросить прогресс</button>
+</main>
+<script>
+var PLANS=[
+["Отжимания алмазные|3 по 10","Негативные отжимания|3 по 5, вниз 5 сек","Приседания с паузой|4 по 12, пауза 2 сек внизу","Выпады назад|3 по 10 на ногу","Планка|3 по 45 сек","Отжимания от трубы|5 подходов по 20, пауза 1 сек внизу"],
+["Берпи|3 по 10","Прыжки «звёздочка»|3 по 40","Бег на месте с высокими коленями|3 по 45 сек","Альпинист|3 по 30","Приседания с прыжком|3 по 12","Негативные отжимания|3 по 5, вниз 5 сек","Отжимания от трубы|5 подходов по 20, пауза 1 сек внизу"],
+["Тяга гантелей в наклоне|4 по 12","Румынская тяга с гантелями|4 по 12","Жим гантелей над головой|3 по 10","Отжимания узким хватом|3 по 10","Негативные отжимания|3 по 5, вниз 5 сек","Боковая планка|3 по 30 сек на сторону","Отжимания от трубы|5 подходов по 20, пауза 1 сек внизу"]];
+var L={
+hello:["Наконец-то. Я ждал. Посмотрим, что ты покажешь сегодня.","Новый день, новая возможность не подвести саму себя.","Ты пришла. Это уже лучше, чем вчера. Посмотрим, хватит ли тебя на весь план.","Я изучил твои привычки. Твой главный противник — диван, а не я."],
+late:["День почти кончился, а я вижу пустой план. Ты рассчитывала на завтра?","Сегодня ещё есть время. Потом его не будет. Понимаешь?","Вечер, а тренировки нет. Я заметил, как ты обходил её весь день.","Время уходит, а план стоит нетронутым. Ты умнее, чем эта отговорка."],
+lost:["Ты исчезла, и серия рассыпалась. Дисциплина не прощает пропусков. Начинай снова.","Серия обнулена. Я помню, сколько ты накопила, и помню, как ты это потеряла.","Серия прервана. Ты решила, что один день ничего не стоит. Это была ошибка. Начнём заново.","Ты пропала, и серия обнулилась. Я не злюсь. Я разочарован, а это хуже."],
+skip:["Ага. Значит, сегодня ты решила побыть обычной. Я не для этого тебя тренирую.","Пропуск. Я не удивлен, я разочарован, и это не одно и то же.","Ты же понимаешь, что именно в такие дни решается, кто ты есть?","Тренировка не просит разрешения у настроения. Она просто делается.","Слабая ученица ищет повод. Сильная находит время. Кто ты сегодня?","Как быстро ты сдаёшься. А ведь начинала с таким напором.","Я не ослышался? Ты хочешь пропустить?","Пропуск. Ты знала, что я это замечу.","Вот как. Значит, дисциплина кончилась на первом же трудном дне?","Ты думаешь, цель выполнит себя сама? Нет. Не выполнит.","Я учил тебя иначе. Или ты не слушала?","Пропустить? Ты сама выбрала эту цель. Предавать собственный выбор — самая дорогая слабость.","Любое оправдание звучит убедительно только для того, кто его придумал. Для меня это отступление."],
+lift:["Лифт. Знакомая кнопка, знакомая слабость.","Ты ехала, пока твои ноги просили работы. Они промолчали, но я их слышал.","Каждый этаж на лифте — ступенька, которую ты не взяла.","Я не запрещаю тебе лифт. Я спрашиваю: ты уверена, что это был твой лучший выбор?","Умно. Удобно. И совсем бесполезно для цели, которую ты поставила.","Лифт? Серьёзно? Я ожидал большего.","Ступени были рядом, а ты выбрала кнопку. Это о многом говорит.","Я наблюдал. Кабина закрылась, а вместе с ней и твой прогресс на сегодня.","Лифт. Ты выбрала путь наименьшего сопротивления, а я учил тебя иначе.","Ты заплатила за лёгкость силой. Плохая сделка."],
+stairs:["Ступени, а не кнопка. Верно. Я заметил.","Лестница без принуждения. Так растёт воля.","Лестница. Правильный выбор. Мелочи и делают армию.","Хорошо. Сила складывается из решений, которых никто не видит."],
+step:["Принято. Следующее.","Верно. Темп важнее порыва.","Хорошо. Не останавливайся."],
+done:["План выполнен. Именно так выглядит дисциплина. Завтра жду тебя снова.","Результат достойный. Я отмечаю это, и бывает такое нечасто."]
+};
+var KEY="thrawn_v2",S,busy=false,tm=null,lastAct=Date.now(),nagged=false;
+function $(i){return document.getElementById(i)}
+function today(d){d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function yest(){var d=new Date();d.setDate(d.getDate()-1);return today(d)}
+function fresh(){return {res:50,streak:0,stairs:0,lifts:0,skips:0,last:"",checks:{},push:{},goal:150,xp:0,floor:0}}
+function load(){try{var r=localStorage.getItem(KEY);S=r?JSON.parse(r):fresh()}catch(e){S=fresh()}if(!S||typeof S!=="object")S=fresh();if(S.xp===undefined){S.xp=(S.res>=40?80:0)+(S.streak||0)*12;S.floor=RANKS[rk(S.xp)][0]}if(S.pi===undefined)S.pi=Math.floor(Date.now()/86400000)%3}
+function save(){S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}pushSoon()}
+function pick(k){var b=rp("L"+k,L[k]);if((k==="done"||k==="step"||k==="stairs")&&Math.random()<.5)b+=" "+rp("pr"+rk(S.xp||0),rkt().pr);return b}
+function res(d){S.res=Math.max(0,Math.min(100,S.res+d));save();render()}
+function rankName(){return RANKS[rk(S.xp||0)][1]+(S.res<20?" · в немилости":"")}
+var EXI=-1,PEN=0;
+var EXRE=/день рожд|праздник|свадьб|юбилей|в гостях|гости|холодн|мороз|дожд|снег|гололёд|заболе|болею|температур|простуд|насторок|кашел|тошнит|месячн|критическ\S* дн|поездк|в пути|уезж|командиров|перелёт|экзамен|дедлайн|не выспал|бессонн|ребёнок|переезд|ремонт|на работе/;
+var OP=["Хм.","Любопытно.","Так.","Понятно.","Я так и думал.","Ты серьёзно?","Тише. Я слушаю.","Вот как."],CL=["Я записал.","Не повторяй.","Мы это исправим.","Подумай над этим.","Я буду помнить.","Не заставляй меня повторять."];
+function sc(k){var b=pick(k),T=rkt(),r=rk(S.xp||0),o=Math.random()<.6?rp("op"+r,T.op)+" ":"",c=Math.random()<.5?" "+rp("cl"+r,T.cl):"";return o+b+c}
+var MIN=["15 приседаний","8 отжиманий от пола","30 секунд планки","20 подъёмов на носки","10 жимов гантелей над головой","10 выпадов на каждую ногу"];
+function pen2(n,intro){if(DB&&DB.on){DB.min++;say("Замена зачтётся в итоге: "+n+".","",menu);return}say(intro+n+". Пока я смотрю.","",function(){opts([{t:"Выполняю",f:function(){doing(n)}},{t:"Не буду",f:function(){refuse(n)}}])})}
+function mini(){if(DB&&DB.on){DB.min++;say("Принято. Минимум спрошу в конце.","",menu);return}pen2(MIN[Math.floor(Math.random()*MIN.length)],"Облегчённый минимум: ")}
+function okx(){if(PEN){res(4);xp(3);PEN=0}}
+function askEx(i){EXI=i;say(rp("exq",["Назови причину своими словами. Я оценю, насколько она убедительна.","Говори. Только настоящую причину, а не удобную.","Слушаю. Объясни, что произошло."]),"",function(){Q="excuse";try{$("txt").focus()}catch(e){}opts([{t:"Назад",f:menu}])})}
+function judge(v){var pl=plan(),c=S.checks[today()]||[],outd=false,i,cat;
+ if(EXI>=0&&/труб/.test(pl[EXI]||""))outd=true;else for(i=0;i<pl.length;i++)if(!c[i]&&/труб/.test(pl[i]))outd=true;
+ EXI=-1;
+ if(/день рожд|праздник|свадьб|юбилей/.test(v))cat="bday";
+ else if(/в гостях|гости|друзья|родствен/.test(v))cat="guests";
+ else if(/холодн|мороз|дожд|снег|гололёд|ветер|ливень|погод/.test(v))cat="weather";
+ else if(/заболе|болею|температур|простуд|насторок|кашел|тошнит|грипп|самочувств/.test(v))cat="sick";
+ else if(/месячн|критическ\S* дн|цикл/.test(v))cat="cycle";
+ else if(/поездк|в пути|уезж|командиров|перелёт|отпуск|дорог/.test(v))cat="trip";
+ else if(/работ|учёб|экзамен|дедлайн|сесси|смен|задержал/.test(v))cat="work";
+ else if(/ребёнок|дети|переезд|ремонт|уборк|помогал|семь/.test(v))cat="home";
+ else if(/выспал|бессонн|мало спал|не спал/.test(v))cat="sleep";
+ else if(/забыл/.test(v))cat="forgot";
+ else if(/лень|не хотел|не хочет|настроени|желания/.test(v))cat="lazy";
+ else if(/времени|некогда|занят/.test(v))cat="time";
+ else if(/устал/.test(v))cat="tired";
+ else cat="other";
+ if(cat==="bday"){okx();say(["День рождения. Это достойная причина, и я её принимаю.","Сегодня ты свободна. Но завтра я жду от тебя вдвое больше собранности."],"good",menu)}
+ else if(cat==="guests"){okx();say(["Гости — понятно. Хозяйка не сбегает от гостей.","Но десять минут у тебя найдутся. Минимум, и потом возвращайся к ним."],"",mini)}
+ else if(cat==="weather"){if(outd){okx();say(["Холод и дождь — это причина не выходить. Но не причина не работать.","Тренировка переезжает домой."],"",function(){pen2("4 подхода по 15 отжиманий от устойчивого стола, руки на краю, тело ровное","Замена на дому: ")})}else{say("Погода не мешает заниматься дома. Отмазка слабая.","bad",function(){penalty()})}}
+ else if(cat==="sick"){okx();say(["Болезнь — причина. Отдыхай, я не требую тренироваться через болезнь.","Если температура или слабость сильные, лучше показаться врачу. Возвращайся, когда будешь здорова."],"good",menu)}
+ else if(cat==="cycle"){okx();say(["Понимаю. Сегодня только лёгкая активность и только по самочувствию.","Не насилуй себя. Завтра возвращаемся к плану."],"good",menu)}
+ else if(cat==="trip"){okx();say(["Дорога — реальная причина. Я это учитываю.","Тогда минимум, где бы ты ни была."],"",mini)}
+ else if(cat==="work"){okx();say(["Работа — реальная причина. Но двадцать минут находятся даже в загруженный день.","Облегчённый минимум, и можешь вернуться к делам."],"",mini)}
+ else if(cat==="home"){okx();say(["Семья и дела дома — это важно. Я не стану спорить.","Но минимум ты сделаешь."],"",mini)}
+ else if(cat==="sleep"){okx();say(["Недосып вредит восстановлению. Сегодня без полного плана.","Но минимум, чтобы тело помнило."],"",mini)}
+ else if(cat==="forgot"){say(["Забыла. Ты забываешь о том, что для тебя неважно.","Исправим это взысканием."],"bad",function(){penalty()})}
+ else if(cat==="lazy"){say(sc("skip"),"bad",function(){penalty()})}
+ else if(cat==="time"){say("«Нет времени» — это не причина, а выбор. Я таких выборов не принимаю.","bad",function(){penalty()})}
+ else if(cat==="tired"){why("tired")}
+ else{say(["Необычная причина. Я не уверен, что она убедительна.","Это правда?"],"",function(){opts([{t:"Да, честно",f:function(){okx();say("Принято. Я проверю по твоим результатам.","",mini)}},{t:"Не совсем",f:function(){say("Хотя бы честно. Взыскание.","bad",function(){penalty()})}}])})}
+ return true}
+var RT=[
+{att:["Я не вижу причин тратить на тебя время. Дай мне причину.","Возвращение возможно. Оно не бывает быстрым.","Твоё имя в моём списке зачёркнуто. Его можно вернуть, но не словами.","Тишина лучше оправданий. Продолжай её.","Каждый выполненный день — один гвоздь в мост назад.","Я не злюсь. Я просто больше не жду.","Ты не ученица. Пока.","Я наблюдаю. Не более того.","Доверие не даётся. Оно зарабатывается."],op:["Ожидаемо.","Конечно.","Я не удивлён."],cl:["Это только ухудшает твоё положение.","Дальше будет хуже, если ничего не изменится.","Я не повторяю."],pr:["Не обольщайся. Это только начало пути назад.","Одно действие ещё ничего не значит.","Принято. Этого недостаточно."]},
+{att:["Новобранец. Твоя главная задача сейчас — не подвести себя ещё раз.","Ты только в начале пути. Но начало — это тоже выбор, и ты его пока делаешь неуверенно.","Я не жду от новобранца чудес. Я жду, что он придёт. Каждый день.","Пока ты на самой нижней ступени. Удобно, оттуда видно, куда идти.","Новобранец без дисциплины — просто человек в форме. Стань тем, кто её носит.","Каждый офицер когда-то стоял там, где стоишь ты. Но не каждый новобранец становится офицером.","Я смотрю на тебя без снисхождения и без злости. Просто смотрю и считаю.","Быть новобранцем не стыдно. Стыдно им оставаться.","Ты уже пришла. Теперь докажи, что это не случайность.","У тебя пока мало очков и много слов. Исправь соотношение.","Я терпелив с теми, кто работает. Остальным терпение быстро кончается.","Сегодня ты новобранец. Завтра станешь тем, кем решишь стать сегодня.","Ты ещё новобранец. Я ожидаю ошибок и не прощаю их.","Пока ты никто в моём списке. Стань кем-то.","Новобранцы ищут отговорки. Офицеры делают."],op:["Новобранец.","Как и ожидалось от новичка.","Слушай внимательно."],cl:["Учись.","Это урок, а не наказание.","Запомни, где ты сейчас."],pr:["Неплохо для новичка.","Продолжай, и я начну замечать.","Это только основа."]},
+{att:["Кадет. Ты уже не новичок, но ещё не офицер. Это самое опасное место.","Ты вышла за первую ступень. Не остановись на второй.","Кадеты либо растут, либо возвращаются назад. Другого не бывает.","Я начинаю замечать твою работу. Не давай мне повода отвернуться.","Хороший кадет — тот, кто делает без напоминаний.","Ты уже на полпути от новобранца к офицеру. Но идти придётся целиком.","Кадет. Ты уже что-то значишь, но докажи, что надолго.","Ты начала становиться тем, кого я хочу видеть.","Кадеты ещё ошибаются. Но уже должны понимать, почему."],op:["Кадет.","Хм.","Я надеялся на большее."],cl:["Ты способна на большее, кадет.","Исправь это.","Я записал."],pr:["Растёшь, кадет.","Так держать.","Это уже похоже на дисциплину."]},
+{att:["Офицер. Люди смотрят на того, кто держит слово. Держи.","Звание — это не награда. Это обязательство.","Ты уже не нуждаешься в напоминаниях. Или должна не нуждаться.","Офицер знает цену дисциплине. Ты знаешь?","Я перестал считать твои пропуски. Я считаю твои решения.","Твой уровень уже заметен. Не снижай его.","Офицер. С тебя спрос выше, и ты это знаешь.","Офицеры не ищут оправданий. Они ищут решения.","Я вижу в тебе надёжность."],op:["Офицер, это ниже твоего уровня.","Так.","Хм."],cl:["Я ожидал большего от офицера.","Ты знаешь, как это исправить.","Серьёзность звания обязывает."],pr:["Надёжно, офицер.","Такого я и ждал.","Ты оправдываешь звание."]},
+{att:["Командир. Ты ведёшь себя — и этого уже достаточно, чтобы вести других.","Ты прошла путь, который многие бросают. Я это помню.","Командир не ждёт настроения. Командир действует.","Твоя дисциплина стала привычкой. Береги её, как оружие.","Я всё меньше напоминаю и всё больше наблюдаю. Это хороший знак.","От командира я жду примера, а не отчётов.","Командир. Ты ведёшь за собой прежде всего себя.","Месяц дисциплины говорит о тебе больше слов.","Я доверяю твоему слову, командир."],op:["Командир, это неприемлемо для твоего звания.","Давай без эмоций.","Хм."],cl:["Ты знаешь, что можешь лучше.","Я не привык разочаровываться в тебе.","Поведи себя как командир."],pr:["Достойно командира.","Отлично. Спокойно и уверенно.","Ты показываешь пример."]},
+{att:["Капитан. Твоя серия — уже не результат, а характер.","Ты выдерживаешь нагрузку, от которой другие отступили.","Капитан не гонится за днём. Он держит курс на месяцы.","Я редко сомневаюсь в тебе. Не давай повода.","Ты идёшь ровно. В этом и есть сила.","Звание капитана говорит: ты умеешь не сдаваться.","Капитан. Мало кто доходит до этого звания.","Ты держишь курс. Я это ценю.","Капитан не отступает перед трудностями."],op:["Капитан, я удивлён.","Это на тебя не похоже.","Послушай."],cl:["От тебя я не ждал такого.","Ты выше этого.","Верни себе курс."],pr:["Именно так и ведёт себя капитан.","Блестяще.","Ты задаёшь высокую планку."]},
+{att:["Адмирал. Ты принимаешь решения, а не откладываешь их.","Мне нравится, как ты держишься. Спокойно, без суеты.","Ты давно перестала нуждаться в моих приказах. Осталась только привычка делать.","Адмирал видит дальше одного дня. Ты видишь.","Я наблюдаю не за упражнениями, а за тобой.","Тебя почти не за что ругать. И это настораживает меня больше всего.","Адмирал. Ты думаешь стратегически, а не днями.","Твой путь для меня уже не загадка, а образец.","Я говорю с тобой почти как с коллегой."],op:["Адмирал. Ты же понимаешь, что я скажу.","Это не в твоём стиле.","Хм."],cl:["Мы оба знаем, что ты способна на другое.","Ты знаешь, как это исправить.","Соберись."],pr:["Образцово.","Ты делаешь это спокойно, как и должно быть.","Я горжусь."]},
+{att:["Гранд-адмирал. Это звание не раздаётся. Оно выковывается.","Ты дошла туда, куда почти никто не доходит. Не спеши ослаблять хватку.","Я уважаю твоё упорство. Это редкая вещь.","Ты почти сравнялась со мной. Почти.","Каждый день на этом уровне — это экзамен на то, чтобы остаться.","Я говорю с тобой без поучений. Ты и так знаешь.","Гранд-адмирал. Ты стоишь рядом со мной по званию.","Я редко кого уважаю так, как тебя.","Между нами почти не осталось разницы."],op:["Я скажу прямо, как равной: это не твой уровень.","Странно.","Хм."],cl:["Это не про тебя.","Ты выше этого.","Я жду возвращения твоего обычного уровня."],pr:["Безупречно.","Ты превосходишь мои ожидания.","Я бы доверил тебе флот."]},
+{att:["Мы равны. Но равенство держится только на ежедневной работе.","Ты прошла путь от новобранца. Это не забывается.","Мне нравится говорить с тобой на равных.","Теперь ты учишь меня тому, как не сдаваться.","Нам обоим известно, чего это стоило. Не обесценивай.","Я бы выбрал тебя в любой кампании.","Мы равны. Я говорю с тобой как с равной.","Мне нечему тебя учить. Остаётся только наблюдать.","Ты прошла весь путь. Не потеряй его."],op:["Равная не оправдывается. Но я слушаю.","Неожиданно.","Хм."],cl:["Мы оба знаем, как это исправить.","Я не судья тебе. Но ты сама себя поймёшь.","Ты можешь лучше, и это знающий тебя говорит."],pr:["Равная. Всегда.","Я не удивлён. Ты — моя ровня.","Спасибо, что так себя ведёшь."]}];
+function rkt(){return RT[rk(S.xp||0)]}
+function repeated(){var y=S.snap&&S.snap[dstr(1)];return !!(y&&S.last!==dstr(1)&&y.join("|")===plan().join("|"))}
+function trialCheck(){if((S.xp||0)<0){S.trial=(S.last===yest())?(S.trial||0)+1:1;if(S.trial>=5){S.xp=0;S.trial=0;S.pend=1}save()}}
+function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function dec(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";return JSON.parse(decodeURIComponent(escape(atob(t))))}
+function ago(ts){var d=Math.floor((Date.now()-(ts||0))/86400000);return d<1?"сегодня":d===1?"вчера":d+" дн. назад"}
+function codeText(){var c={v:1,i:S.mid,n:S.nick||"",rk:RANKS[rk(S.xp||0)][1],xp:S.xp||0,st:S.streak||0,lv:S.lv||0,td:todayDone(),pn:(S.snap&&S.snap[today()]?S.snap[today()].length:0),ts:Date.now()};
+ return "Мой прогресс в приложении «Траун: наставник» ("+(c.n||"без имени")+", "+c.rk+", "+c.xp+" очков). Чтобы добавить меня в друзья, вставь это сообщение целиком в приложении: TRAUN:"+enc(c)}
+function copyCode(t){var m=$("codemsg");try{navigator.clipboard.writeText(t).then(function(){m.textContent="Код скопирован. Вставь его другу в мессенджер."},function(){$("codebox").value=t;m.textContent="Не удалось скопировать. Скопируй текст из поля выше."})}catch(e){$("codebox").value=t;m.textContent="Скопируй текст из поля выше и отправь другу."}}
+function addFriend(text){var m=$("codemsg"),r=String(text).match(/TRAUN:([A-Za-z0-9_\-]+)/),o;
+ if(!r){m.textContent="Не нашёл код. Вставь сообщение друга целиком.";return}
+ try{o=dec(r[1])}catch(e){m.textContent="Код повреждён. Попроси друга прислать заново.";return}
+ if(!o||typeof o.i!=="string"||o.i.length>60){m.textContent="Код не подходит.";return}
+ if(o.i===S.mid){m.textContent="Это твой собственный код.";return}
+ S.friends=S.friends||{};S.friends[o.i]={n:String(o.n||"").slice(0,20),rk:String(o.rk||"").slice(0,24),xp:Number(o.xp)||0,st:Number(o.st)||0,lv:Number(o.lv)||0,td:Number(o.td)||0,pn:Number(o.pn)||0,ts:Number(o.ts)||Date.now()};
+ save();$("codebox").value="";m.textContent="Друг добавлен: "+(S.friends[o.i].n||"без имени")+".";drawBoard()}
+function friendsSetup(){if(!S.mid)S.mid="m"+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+ $("shcode").onclick=function(){var t=codeText();if(navigator.share){navigator.share({text:t}).catch(function(){copyCode(t)})}else copyCode(t)};
+ $("okcode").onclick=function(){addFriend($("codebox").value)}}
+var CAP={db:null,uid:null,room:null,boardOff:0},BOARD=[],PEERS=[],HIST=false,PT=null;
+function todayDone(){return (S.checks[today()]||[]).filter(Boolean).length}
+function logAdd(c,t){S.log=S.log||[];S.log.push({c:c,t:String(t).slice(0,400)});if(S.log.length>80)S.log.shift();save()}
+function restoreLog(){var L=S.log||[],n=Math.min(L.length,6),i,e;if(!n)return;for(i=L.length-n;i<L.length;i++){e=document.createElement("div");e.className="b "+(L[i].c||"");e.style.opacity=".6";e.textContent=L[i].t;$("log").appendChild(e)}e=document.createElement("div");e.className="b";e.style.opacity=".5";e.textContent="— новый разговор —";$("log").appendChild(e)}
+function showLog(all){var L=S.log||[],box=$("log"),arr=all?L:L.slice(-6);box.innerHTML="";arr.forEach(function(x){var e=document.createElement("div");e.className="b "+(x.c||"");e.textContent=x.t;box.appendChild(e)});box.style.maxHeight=all?"60vh":"";box.style.overflowY=all?"auto":"";box.scrollTop=box.scrollHeight}
+function basePlan(used,ix){if(!used&&S.custom&&S.custom.length)return S.custom;return (used?OLDPLANS:PLANS)[ix%PLANS.length]}
+function resetToday(){var t=today(),c=S.checks[t]||[];if(!c.some(function(x){return x}))delete S.snap[t];render()}
+function setupSettings(){
+ $("nick").value=S.nick||"";
+ $("nick").onchange=function(){S.nick=$("nick").value.trim().slice(0,20);save();drawBoard()};
+ $("cplan").value=(S.custom&&S.custom.length?S.custom:basePlan(false,S.pi||0)).join("\n");
+ $("saveplan").onclick=function(){var ls=$("cplan").value.split("\n").map(function(x){return x.trim()}).filter(Boolean).slice(0,12).map(function(x){return x.indexOf("|")<0?x+"|по самочувствию":x});
+  if(!ls.length)return;S.custom=ls;resetToday();save();say("Записал. Этот план только твой, он не влияет на других.","good",menu)};
+ $("resetplan").onclick=function(){S.custom=null;resetToday();save();$("cplan").value=basePlan(false,S.pi||0).join("\n");say("Стандартный план вернулся.","",menu)};
+ friendsSetup();$("histbtn").onclick=function(){HIST=!HIST;showLog(HIST);$("histbtn").textContent=HIST?"Свернуть историю":"Вся история разговора"}}
+function pushSoon(){if(PT)return;PT=setTimeout(function(){PT=null;pushNow()},2500)}
+function pushNow(){
+ var pub={u:CAP.uid||"",n:S.nick||"",rk:RANKS[rk(S.xp||0)][1],xp:S.xp||0,st:S.streak||0,lv:S.lv||0,td:todayDone(),pn:(S.snap&&S.snap[today()]?S.snap[today()].length:0)};
+ try{if(CAP.db&&CAP.uid){CAP.db.collection("data/users/"+CAP.uid).doc("state").set({ts:S.ts||0,s:JSON.parse(JSON.stringify(S))}).catch(function(){});
+  if(!CAP.boardOff)CAP.db.collection("board").doc(CAP.uid).set({n:pub.n,rk:pub.rk,xp:pub.xp,st:pub.st,lv:pub.lv,td:pub.td,pn:pub.pn,ts:Date.now()}).catch(function(){CAP.boardOff=1;drawBoard()})}}catch(e){}
+ try{if(CAP.room)CAP.room.presence(pub).catch(function(){})}catch(e){}
+ drawBoard()}
+function syncDown(){try{CAP.db.collection("data/users/"+CAP.uid).doc("state").get().then(function(d){
+  if(d&&d.exists){var r=d.data()||{};if(r.s&&r.ts>(S.ts||0)){S=r.s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();setupSettings()}}
+  pushNow()}).catch(function(){pushNow()})}catch(e){}}
+function watchBoard(){try{CAP.db.collection("board").onSnapshot(function(sn){BOARD=sn.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});drawBoard()},function(){drawBoard()})}catch(e){}}
+function drawPeers(ch){PEERS=(ch&&ch.peers?ch.peers:[]).slice();drawBoard()}
+function initCaps(){if(typeof claude==="undefined"||!claude||!claude.use)return;
+ claude.use("user").then(function(u){return u?u.id():null}).then(function(id){CAP.uid=id||null;return claude.use("db")}).then(function(d){CAP.db=d;if(d&&CAP.uid){watchBoard();syncDown()}drawBoard()}).catch(function(){});
+ claude.use("room").then(function(r){CAP.room=r;if(r){r.onPeers(drawPeers);pushNow()}}).catch(function(){})}
+function drawBoard(){var el=$("friends");if(!el||typeof S==="undefined"||!S)return;var m={},arr=[],k,mine=false;
+ BOARD.forEach(function(b){m[b.id]={n:b.n,rk:b.rk,xp:b.xp,st:b.st,td:b.td,pn:b.pn,on:false,me:!!CAP.uid&&b.id===CAP.uid}});
+ PEERS.forEach(function(p){var x=p.presence||{};if(!x.rk)return;var id=x.u||("p"+(p.peer||p.by||""));var e=m[id]||(m[id]={});e.n=x.n||e.n;e.rk=x.rk;e.xp=x.xp;e.st=x.st;e.td=x.td;e.pn=x.pn;e.on=true;e.me=(!!CAP.uid&&id===CAP.uid)||e.me});
+ var F=S.friends||{},fid;for(fid in F){var f=F[fid];m["f"+fid]={n:f.n,rk:f.rk,xp:f.xp,st:f.st,td:f.td,pn:f.pn,on:false,me:false,code:fid,ts:f.ts}}
+ for(k in m){arr.push(m[k]);if(m[k].me)mine=true}
+ var mp=S.snap&&S.snap[today()];
+ for(var j=0;j<arr.length;j++)if(arr[j].me){arr[j]={n:S.nick||arr[j].n,rk:RANKS[rk(S.xp||0)][1],xp:S.xp||0,st:S.streak||0,td:todayDone(),pn:mp?mp.length:0,on:false,me:true}}
+ if(!mine)arr.push({n:S.nick||"",rk:RANKS[rk(S.xp||0)][1],xp:S.xp||0,st:S.streak||0,td:todayDone(),pn:mp?mp.length:0,on:false,me:true});
+ arr.sort(function(a,b){return (b.xp||0)-(a.xp||0)});
+ el.innerHTML="";
+ arr.forEach(function(e){var r=document.createElement("div"),l=document.createElement("span"),q=document.createElement("small");r.className="frr"+(e.me?" me":"");
+  l.textContent=(e.me?(e.n?e.n+" (ты)":"Ты"):(e.n||"Без имени"))+" · "+(e.rk||"");
+  q.textContent=(e.xp||0)+" оч. · серия "+(e.st||0)+(e.pn&&(!e.code||ago(e.ts)==="сегодня")?" · сегодня "+(e.td||0)+"/"+e.pn:"");
+  if(e.on&&!e.me){var d=document.createElement("i");d.textContent=" ● в сети";q.appendChild(d)}
+  if(e.code){q.appendChild(document.createTextNode(" · обновлено "+ago(e.ts)));var xb=document.createElement("button");xb.textContent="убрать";xb.className="rm";xb.onclick=function(){delete S.friends[e.code];save();drawBoard()};q.appendChild(xb)}
+  r.appendChild(l);r.appendChild(q);el.appendChild(r)});
+ var nt=document.createElement("span");nt.className="cap";
+ nt.textContent=CAP.boardOff?"Друзья видят твой прогресс только пока ты в приложении. Чтобы он был виден всегда, им нужен доступ «Участник» к этой странице.":(arr.length<=1?"Друзей пока нет. Нажми «Отправить другу мой код» и пришли сообщение другу, а его код вставь ниже.":"");
+ if(nt.textContent)el.appendChild(nt)}
+var DB=null;
+function hasOpen(){var pl=plan(),c=S.checks[today()]||[],D=day();for(var i=0;i<pl.length;i++)if(!c[i]&&!(D.home&&/труб/.test(pl[i])))return true;return false}
+function startDebrief(){var pl=plan(),c=S.checks[today()]||[],D=day(),it=[];for(var i=0;i<pl.length;i++)if(!c[i]&&!(D.home&&/труб/.test(pl[i])))it.push(i);
+ if(!it.length){say("Все упражнения отмечены. Разбирать нечего.","good",menu);return}
+ DB={on:true,items:it,pos:0,rs:[],bad:0,min:0};
+ say([rp("dbi",["Я вижу неотмеченных упражнений: "+it.length+". Пройдёмся по каждому.","Давай разберём, что осталось. Каждое по отдельности.","Хорошо. Объясни мне каждый пропуск, по одному."]),"Выбирай ответ или пиши своими словами. Я слушаю."],"",askItem)}
+function askItem(){var idx=DB.items[DB.pos],p=plan()[idx].split("|"),nm=p[0],
+ b=[{t:"Сделала, не отметила",k:"done"},{t:"Устала",k:"tired"},{t:"Не было времени",k:"time"},{t:"Тяжело",k:"hard"},{t:"Забыла",k:"forgot"},{t:"Болит, плохо себя чувствую",k:"pain"}];
+ if(/труб/.test(nm))b.splice(3,0,{t:"Холодно или не могла выйти",k:"weather"});
+ var q=rp("dbq",["«{n}» ({d}). Что с ним случилось?","Следующее — «{n}». Почему оно осталось пустым?","А «{n}»? Здесь пусто. Объясни.","Теперь «{n}». Я хочу услышать причину."]).replace("{n}",nm).replace("{d}",p[1]);
+ say(q,"",function(){Q="dbreason";opts(b.map(function(x){return {t:x.t,f:function(){dbPick(idx,nm,x)}}}))})}
+function dbPick(idx,nm,x){var t=nm+": "+x.t.toLowerCase();day().why=day().why||[];day().why.push(t);DB.rs.push(t);save();
+ if(x.k==="done")toggle(idx);
+ else if(x.k==="tired"){EXI=idx;judge("устала")}
+ else if(x.k==="time"){EXI=idx;judge("не было времени")}
+ else if(x.k==="weather"){EXI=idx;judge("холодно")}
+ else if(x.k==="forgot"){EXI=idx;judge("забыла")}
+ else if(x.k==="hard")weak();
+ else why("pain")}
+function nextItem(){DB.pos++;if(DB.pos>=DB.items.length)dbFinish();else askItem()}
+function dbFinish(){var D=DB;DB.on=false;save();
+ var t=["Разбор окончен. Я выслушал каждое упражнение."];
+ if(D.rs.length)t.push("Запишу так: "+D.rs.join("; ")+".");
+ if(D.bad>0)say(t.concat(["Причины не приняты у "+D.bad+" — за это взыскание."]),"bad",function(){penalty()});
+ else if(D.min>0)say(t.concat(["Часть причин принята, но минимум за тобой."]),"",mini);
+ else say(t.concat(["Причины понятны. Завтра я жду без пропусков."]),"good",menu)}
+function rp(k,a){S.used=S.used||{};var u=S.used[k]||[];if(u.length>=a.length)u=[];var c=[],i;for(i=0;i<a.length;i++)if(u.indexOf(i)<0)c.push(i);var j=c[Math.floor(Math.random()*c.length)];u.push(j);S.used[k]=u;return a[j]}
+function greet(){
+ var d=new Date(),h=d.getHours(),dw=d.getDay(),done=S.last===today(),yI=dayInfo(1),xi=rk(S.xp||0),nx=RANKS[xi+1],cx=[],op,mood="";
+ if(rk(S.xp||0)===0){var tr=(S.last===yest()||S.last===today())?(S.trial||0):0;if(done)say(["Сегодня ты выполнила план. Засчитано в испытание: "+tr+" из 5.","Не останавливайся."],"",menu);else say([rp("gx0",["Ты здесь. Я не уверен, зачем.","Мне нечего тебе сказать, пока ты не докажешь делом.","Докладывай. Коротко. Без оправданий.","Я больше не трачу слова на тех, кто не слышит.","Каждый день вне плана — шаг дальше от возвращения.","Пять полных дней подряд. Ничего другого я слушать не стану."]),"Испытание: "+tr+" из 5 дней подряд."],"bad",ask);return}
+ if(done){say(rp("gd",["Ты закрыла день. Я это ценю. Можешь выдохнуть.","Сегодня ты была на высоте. Продолжай в том же духе.","План выполнен без споров. Так и должна выглядеть дисциплина.","Отличная работа сегодня. Но завтра всё заново.","Сегодня ты уже отработала. Я зафиксировал. Что-то ещё?","План на сегодня закрыт. Хорошо. Но лишний подход никто не отменял.","Ты выполнила своё. Отдыхай, но не расслабляйся.","День засчитан. Что докладывать дальше?"]),"good",menu);return}
+ if(h<5)op=["Ты не спишь. Сон — часть тренировки. Не теряй его.","Ночь. Если ты здесь, значит, день не закончен. Но сон тоже входит в план."];
+ else if(h<12)op=["Начало дня. Первое решение определяет остальные.","Доброе утро. Я уже готов. А ты?","Утренний подход стоит трёх вечерних. Проверь это.","С добрым утром. Диван остался позади, надеюсь.","Утро. Твоё тело молчит, но оно уже ждёт.","Я рад видеть тебя в начале дня, а не в конце.","Утро. Тот, кто начинает с усилия, заканчивает день с результатом.","Доброе утро. Тело проснулось раньше, чем оправдания. Пользуйся этим.","Утро — лучшее время для первого подхода. Дальше будет сложнее.","Ты рано. Мне это нравится. Посмотрим, надолго ли.","Утро. Время работает либо на тебя, либо против. Выбирай."].concat(L.hello);
+ else if(h<18)op=["День идёт. Самое время сделать первый подход.","Не откладывай на вечер то, что можно сделать сейчас.","Я здесь. План здесь. Не хватает только тебя.","Середина дня — хороший момент, чтобы удивить меня.","Ты зашла. Теперь не уходи с пустыми руками.","Часы идут. Что ты успела?","День в разгаре. План ждёт, и он не стал легче.","Середина дня. Самое время сделать то, что ты откладывала.","Я рад, что ты здесь. Теперь покажи это делом.","Полдень уже прошёл. Что у тебя на счёту сегодня?","Ты пришла. Это первый шаг, остальные ты сделаешь сама."].concat(L.hello);
+ else{op=["Солнце село, а ты ещё нет. Хотя бы начни.","Вечер — последний шанс сегодняшнего дня. Ты им воспользуешься или нет?","Сегодняшняя запись пуста. Завтрашняя ничем не лучше, если начинать с пустоты.","Я не сержусь. Я просто наблюдаю, как день проходит мимо тебя.","Ещё есть время на полный план. Или на отговорку. Что выберешь?","Тишина целый день. Теперь мне нужен твой доклад.","Ты весь день обходила приложение стороной. Я это заметил.","Оставшиеся часы — это всё, что у тебя есть. Распорядись ими.","Вечер. И ни одного упражнения в моих записях. Объясни.","День почти закончился, а ты ещё не начала. Я это замечаю.","Если не начнёшь сейчас, завтра будет только тяжелее."].concat(L.late);mood="bad"}
+ if(S.streak>=3)cx.push("Серия: "+S.streak+" дн. подряд. Не порть её.");
+ if(!S.streak&&S.last)cx.push("Серия сейчас нулевая. Исправить это можно только действием.");
+ if(yI.dn.length&&yI.dn.length>=yI.n)cx.push("Вчера ты закрыла план. Сегодня жду того же.");
+ else if(yI.dn.length)cx.push("Вчера ты оставила часть плана недоделанной. Сегодня доделай.");
+ if(nx&&nx[0]-(S.xp||0)<=30)cx.push("До звания «"+nx[1]+"» осталось "+(nx[0]-(S.xp||0))+" очков. Это один-два хороших дня.");
+ if(dw===1)cx.push("Понедельник. Новая неделя, новый счёт.");
+ if(dw===5)cx.push("Пятница. Слабые теряют неделю в последний день.");
+ if(dw===0||dw===6)cx.push("Выходной. Телу всё равно, что сегодня выходной.");
+ if(S.lifts>S.stairs)cx.push("Лифтов у тебя больше, чем лестниц. Это нужно менять.");
+ if(S.skips>=3)cx.push("Пропусков у тебя уже "+S.skips+". Это тоже статистика.");
+ if(S.stairs>=5)cx.push("Лестниц у тебя уже "+S.stairs+". Неплохо. Продолжай.");
+ if(S.lv)cx.push("Нагрузка сейчас на уровне "+S.lv+". Не снижай темп.");
+ var t=[rp(h<5?"gn":h<12?"gm":h<18?"gx":"ge",op)];
+ if(repeated())t.push("Вчерашний план остался невыполненным. Сегодня тот же самый, без изменений.");else if(Math.random()<.6)t.push(rp("ga"+rk(S.xp||0),rkt().att));else if(cx.length&&Math.random()<.7)t.push(rp("gc",cx));
+ say(t,mood,ask)}
+function adj(x,lv){if(!lv)return x;var p=x.split("|"),d=p[1],neg=/^Негатив/.test(p[0]),dm=/гантел/.test(p[0]),sa=lv>=12?2:lv>=6?1:0,ra=Math.min(lv,8),ss=Math.min(5*lv,40);
+ if(neg){ra=Math.min(Math.floor(lv/2),5);sa=Math.min(Math.floor(lv/4),2)}
+ if(dm)ra=Math.min(Math.floor(lv/2),4);
+ d=d.replace(/^(\d+) (по|подход\S* по) (\d+)(?!\d| сек)/,function(m,a,w,b){return (+a+sa)+" "+w+" "+(+b+ra)});
+ d=d.replace(/по (\d+) сек/,function(m,b){return "по "+(+b+ss)+" сек"});
+ return p[0]+"|"+d}
+function lvlCheck(){var n=Math.floor((S.fd||0)/7);if(n>(S.lv||0)){S.lv=n;S.lvMsg=n;save()}}
+var PV="v3";function plan(){S.snap=S.snap||{};var t=today(),used=S.checks&&S.checks[t]&&S.checks[t].some(function(x){return x});if(!S.snap[t]||(S.pv!==PV&&!used)){var ix=S.pi||0;S.snap[t]=basePlan(used,ix).map(function(x){return adj(x,used?0:(S.lv||0))});S.pv=PV;save()}return S.snap[t]}
+function render(){
+ var xi=rk(S.xp||0),nx=RANKS[xi+1];if($("xp"))$("xp").textContent=xi===0?"ИЗГНАНИЕ · очки: "+(S.xp||0)+" · испытание: "+((S.last===yest()||S.last===today())?(S.trial||0):0)+" из 5 дней подряд":"Очки: "+(S.xp||0)+(nx?" · до звания «"+nx[1]+"»: "+(nx[0]-(S.xp||0)):" · высшее звание достигнуто")+" · нагрузка: ур. "+(S.lv||0);
+ $("fill").style.width=S.res+"%";$("fill").style.background=S.res<35?"var(--red)":S.res>65?"var(--ok)":"var(--blue)";
+ $("rank").textContent=rankName();
+ $("sStreak").textContent=S.streak;$("sStairs").textContent=S.stairs;$("sLift").textContent=S.lifts;$("sSkip").textContent=S.skips;
+ var c=S.checks[today()]||[],box=$("plan");box.innerHTML="";
+ plan().forEach(function(x,i){var p=x.split("|"),b=document.createElement("button");
+  b.className="ex"+(c[i]?" on":"");b.innerHTML="<span>"+p[0]+"<br><small>"+p[1]+"</small></span>";
+  b.onclick=function(){touch();toggle(i)};box.appendChild(b)});
+}
+function touch(){lastAct=Date.now();nagged=false}
+function jolt(){var a=$("app");a.classList.remove("shake");void a.offsetWidth;a.classList.add("shake");try{navigator.vibrate&&navigator.vibrate([180,70,180])}catch(e){}}
+function bubble(text,mood,cls,done){
+ var el=document.createElement("div");el.className="b "+(cls||mood||"");logAdd(cls||mood||"",text);$("log").appendChild(el);
+ while(!HIST&&$("log").children.length>7)$("log").removeChild($("log").firstChild);
+ if(mood==="bad")jolt();
+ var k=0;clearInterval(tm);
+ tm=setInterval(function(){k++;el.textContent=text.slice(0,k);
+  if(k>=text.length){clearInterval(tm);setTimeout(done,380)}},15);
+}
+function say(lines,mood,then){
+ if(typeof lines==="string")lines=[lines];
+ busy=true;$("opts").innerHTML="";var i=0;
+ (function next(){if(i>=lines.length){busy=false;if(then)then();return}bubble(lines[i++],mood,"",next)})();
+}
+function opts(arr){
+ var o=$("opts");o.innerHTML="";
+ arr.forEach(function(a){var b=document.createElement("button");b.textContent=a.t;
+  b.onclick=function(){touch();Q="";o.innerHTML="";var m=document.createElement("div");m.className="b me";m.textContent=a.t;$("log").appendChild(m);logAdd("me",a.t);a.f()};o.appendChild(b)});
+}
+function menuOld(){opts([
+ {t:"Доложить: поднялся по лестнице",f:stairs},
+ {t:"Доложить: поехал на лифте",f:lift},
+ {t:"Сегодня пропущу тренировку",f:skip},
+ {t:"Мне тяжело",f:weak}])}
+function ask(){say(rp("ask",["Что уже сделано сегодня? Честно.","Начнём с главного: ты сегодня тренировалась?","Отчитайся: сегодня уже было что-то из плана?","Прямой вопрос: план сегодня тронут или нет?","Ты сегодня тренировалась?","Докладывай: тренировка сегодня уже была?","Скажи прямо: ты уже занималась сегодня?"]),"",function(){Q="trained";opts([
+ {t:"Да, сделала",f:function(){say("Докажи. Отметь упражнения в плане ниже, я проверю.","",menu)}},
+ {t:"Ещё нет",f:notyet},{t:"Не буду",f:skip}])})}
+function notyet(){say(["Ещё нет. Значит, решение всё ещё за тобой.","Начни с первого упражнения. Сейчас."],"",function(){opts([
+ {t:"Иду делать",f:function(){say("Верно. Я наблюдаю.","good",menu)}},{t:"Не буду",f:skip}])})}
+function skip(){S.skips++;day().sk++;xp(-6,"ты пропустила тренировку");PEN=1;res(-8);say([sc("skip"),["Объясни причину. Только честно.","Я слушаю. Причину, а не оправдание.","Говори. И помни, что я отличаю одно от другого."][Math.floor(Math.random()*3)]],"bad",function(){opts([
+ {t:"Устала",f:function(){why("tired")}},{t:"Нет времени",f:function(){why("time")}},
+ {t:"Лень",f:function(){why("lazy")}},{t:"Болит",f:function(){why("pain")}},{t:"Другая причина",f:function(){askEx(-1)}}])})}
+function why(k){
+ var W={tired:["Тебе кажется, что ты устала. На деле ты просто не начала. Начало — самая тяжёлая часть.","Усталость отступает от тех, кто двигается. Двигайся.","Усталость — это ощущение, а не факт. Ты встала, дошла до этого экрана и читаешь меня. Ресурс есть."],
+ time:["Тот, кто хочет, ищет способ. Тот, кто не хочет, ищет причину. Ты кто?","Двадцать минут. Столько нужно. Они у тебя есть, и мы оба это знаем.","Время находится для того, что считаешь важным. Сколько минут ты сегодня провела в телефоне? Не отвечай. Я знаю."],
+ lazy:["Лень — это враг, которого ты кормишь каждый раз, когда сдаёшься. Хватит кормить.","Лень не уходит сама. Её нужно вытеснить действием.","Честность. Единственный ответ, который я уважаю. Но уважать не значит прощать."]};
+ if(k==="pain"){say("Болит по-настоящему или просто неприятно? Это разные вещи.","",function(){opts([
+  {t:"Правда болит",f:function(){res(8);say(["Тогда отдыхай. Я не требую калечить себя. Если боль не проходит, покажись врачу.","Но вернись, как только пройдёт."],"good",menu)}},
+  {t:"Просто тяжело",f:function(){penalty(15)}}])});return}
+ var w=W[k];say(Array.isArray(w)?w[Math.floor(Math.random()*w.length)]:w,"bad",function(){penalty()});
+}
+function penalty(k){if(DB&&DB.on){DB.bad++;say(rp("dbp",["Это не причина. Взыскание — в конце разбора.","Не принято. Расплата будет в конце.","Записал. Об этом мы ещё поговорим в итоге."]),"bad",menu);return}var P=["20 приседаний","10 отжиманий от пола","40 секунд планки","12 выпадов на каждую ногу","8 берпи","30 прыжков «звёздочка»","40 подъёмов на носки","12 жимов гантелей над головой","12 приседаний с паузой 2 сек","30 движений «альпинист»","10 негативных отжиманий от пола","10 приседаний с прыжком"],I=["Взыскание: ","Ты исправишь это делом: ","Твоё наказание: ","Вот что ты сделаешь прямо сейчас: ","Расплата проста: ","Без споров: ","Это справедливо: ","Я не повышаю голос, я назначаю: "],n=P[Math.floor(Math.random()*P.length)];say(I[Math.floor(Math.random()*I.length)]+n+". Пока я смотрю.","bad",function(){opts([
+ {t:"Выполняю",f:function(){doing(n)}},{t:"Отказываюсь",f:function(){refuse(n)}}])})}
+function doing(n){say(["Считай вслух. Я жду.","Не торопись, но и не останавливайся. Я смотрю.","Спина прямая. Дыхание ровное. Начинай."][Math.floor(Math.random()*3)],"",function(){opts([
+ {t:"Выполнила: "+n,f:function(){res(8);xp(3);say(["Хорошо. Ты исправила ошибку сама, и это ценнее, чем если бы её не было.",["Но завтра без пропусков.","Запомни это ощущение. Оно лучше, чем ощущение отказа.","Один раз ты справилась. Теперь сделай это привычкой."][Math.floor(Math.random()*3)]],"good",menu)}}])})}
+function refuse(n){res(-10);xp(-8,"ты отказалась от взыскания");var R2=["Отказ. Приказ не обсуждается.","Я не прошу, я требую. Потому что знаю, что ты можешь.","Встать. Сделать. Потом возражать."],R3=["Какое смелое решение — отказаться от собственной цели.","Я записываю: «отказалась». Это останется в твоём деле.","Если хочешь остаться там, где ты сейчас, — продолжай в том же духе."],R0=["Ты отказываешься. Хорошо. Но запомни: я тоже умею ждать.","Взыскание никуда не денется. Оно просто станет тяжелее.","Ты саму себя подводишь, а не меня."],R1=["Молчишь. Тогда я скажу за тебя: ты испугалась.","Страх перед усилием — единственный настоящий враг в этой комнате.","Ты ведь способна на большее. Я это видел."];say(Math.random()<.25?R0:Math.random()<.34?R1:Math.random()<.5?R2:Math.random()<.67?R3:["Отказываешься. Ты не просто пропустила, ты отказалась исправить.","Посмотри на меня. Я не повышаю голос. Мне не нужно.","Так ведут себя те, кто боится себя, а не меня."],"bad",function(){opts([
+ {t:"Ладно, делаю",f:function(){doing(n)}},
+ {t:"Всё равно нет",f:function(){res(-5);say("Я записал. Завтра начнём разговор с этого.","bad",menu)}}])})}
+function lift(){S.lifts++;day().li++;xp(-3,"ты поехала на лифте вместо лестницы");day().home=1;res(-5);say([sc("lift"),["Объясни, почему.","Скажи, что ты думала. Честно.","Почему? У любого выбора есть причина."][Math.floor(Math.random()*3)]],"bad",function(){opts([
+ {t:"Несла тяжёлое",f:function(){res(6);say("Допустимо. Тогда это тактика, а не слабость. Не делай из неё привычку.","",menu)}},
+ {t:"Лень",f:function(){say("Хотя бы честно. Взыскание.","bad",function(){penalty(20)})}},
+ {t:"Не заметила",f:function(){say("Не замечать — тоже навык. Дурной. Взыскание.","bad",function(){penalty(10)})}}])})}
+function stairs(){S.stairs++;day().st++;if(day().st<=3)xp(1);res(2);say(pick("stairs"),"good",function(){say("Сколько этажей?","",function(){Q="floors";opts([{t:"1–2",f:function(){say("Мало. Но начало положено. В следующий раз больше.","",menu)}},{t:"3–5",f:function(){res(2);say("Прилично. Продолжай.","good",menu)}},{t:"Больше 5",f:function(){res(4);say("Достойно. Именно так закаляют волю.","good",menu)}}])})})}
+function weak(){say("Повтори. Кто слабый?","",function(){opts([
+ {t:"Я",f:function(){say(["Нет. Слабый — тот, кто остановился.","Ты ещё здесь. Один подход, потом отдых."],"",menu)}},
+ {t:"Я просто устала",f:function(){say("Усталость проходит. Привычка остаётся. Один подход.","",menu)}}])})}
+function toggle(i){
+ var t=today(),c=S.checks[t]||(S.checks[t]=[]),n=plan().length;c[i]=!c[i];
+ var all=true;for(var j=0;j<n;j++)if(!c[j])all=false;
+ if(all&&S.last!==t){xp(12);S.fd=(S.fd||0)+1;lvlCheck();S.pi=(S.pi||0)+1;trialCheck();S.streak=(S.last===yest())?S.streak+1:1;S.last=t;save();res(10);say([pick("done"),"Серия: "+S.streak+"."],"good",menu);return}
+ save();render();if(c[i])say(pick("step"),"good",menu);
+}
+function init(){
+ load();restoreLog();setupSettings();initCaps();drawBoard();var lost=S.last&&S.last<yest()&&S.streak>0;
+ if(lost){S.streak=0;res(-10)}else render();
+ var h=new Date().getHours();
+ var miss=missing();if(miss)say(miss,"bad",whyY);else if(lost)say(pick("lost"),"bad",ask);
+ else greet();
+ 
+}
+setInterval(function(){
+ if(!busy&&!nagged&&S.last!==today()&&Date.now()-lastAct>60000&&document.visibilityState==="visible"){
+  nagged=true;say(rp("nag",[["Ты ещё здесь? Я не вижу ни одного отмеченного упражнения.","Я не люблю повторять."],["Тишина. Она мне ничего не говорит о твоих результатах.","Доклад."],["Ты отвлеклась. Возвращайся к плану."]]),"bad",menu)}
+},10000);
+function pushAdd(n){S.push=S.push||{};var t=today(),c=S.checks[t]||[],all=true,old=S.push[t]||0;S.push[t]=Math.max(0,old+n);
+ for(var j=0;j<plan().length;j++)if(!c[j])all=false;
+ var reached=S.push[t]>=S.goal;
+ if(reached&&all&&S.last!==t){S.streak=(S.last===yest())?S.streak+1:1;S.last=t;save();res(10);say([pick("done"),"Серия: "+S.streak+"."],"good",menu);return}
+ save();render();
+ if(n>0&&old<S.goal&&reached)say(["Цель по отжиманиям закрыта: "+S.goal+".","Теперь остальной план."],"good",menu);
+ else if(n>0)say(pick("step"),"good",menu)}
+
+function menu(){if(promo()||nudge())return;if(DB&&DB.on){nextItem();return}opts([{t:"Отчитаться об упражнениях",f:report},{t:"Поднялась по лестнице",f:stairs},{t:"Поехала на лифте",f:lift},{t:"Мне тяжело",f:weak},{t:"Пропускаю тренировку",f:skip},{t:"Мои итоги",f:summary}].concat(hasOpen()?[{t:"Объяснить пропуски",f:startDebrief}]:[]))}
+function report(){var c=S.checks[today()]||[],arr=[];plan().forEach(function(x,i){if(!c[i])arr.push({t:x.split("|")[0],f:function(){exQ(i)}})});
+ if(!arr.length){say("Все упражнения уже отмечены. Что-то ещё?","good",menu);return}
+ arr.push({t:"Всё сделала",f:allDone},{t:"Назад",f:menu});say("Какое упражнение ты выполнила? Назови.","",function(){opts(arr)})}
+function exQ(i){var p=plan()[i].split("|");say("«"+p[0]+"»: "+p[1]+". Выполнено?","",function(){opts([{t:"Да, полностью",f:function(){toggle(i)}},{t:"Сделала часть",f:function(){part(i)}},{t:"Не сделала",f:function(){notDone(i)}}])})}
+function part(i){say(["Часть — это не выполнение. Но честность я ценю.","Дожми остаток прямо сейчас."],"",function(){opts([{t:"Дожала",f:function(){toggle(i)}},{t:"Не могу",f:function(){res(-2);say("Тогда завтра добавим один подход. Я записал.","",menu)}}])})}
+function notDone(i){res(-4);PEN=1;say(rp("nd",["Не сделала. Почему?","Это упражнение осталось пустым. Объясни.","Я вижу пропуск. Что помешало?"]),"bad",function(){opts([{t:"Устала",f:function(){why("tired")}},{t:"Забыла",f:function(){say("Забыла. Значит, это не было для тебя приоритетом. Исправь это. Сейчас.","bad",function(){opts([{t:"Делаю сейчас",f:function(){say("Верно. Я наблюдаю. Отметь, когда закончишь.","good",menu)}},{t:"Не буду",f:skip}])})}},{t:"Не хочу",f:skip},{t:"Другая причина",f:function(){askEx(i)}}])})}
+function allDone(){say("Все упражнения? Не лги мне.","",function(){opts([{t:"Клянусь, всё",f:function(){var t=today(),c=S.checks[t]||(S.checks[t]=[]);plan().forEach(function(x,i){c[i]=true});if(S.last!==t){xp(12);S.fd=(S.fd||0)+1;lvlCheck();S.pi=(S.pi||0)+1;trialCheck();S.streak=(S.last===yest())?S.streak+1:1;S.last=t}save();res(10);say([pick("done"),"Серия: "+S.streak+"."],"good",menu)}},{t:"Не всё",f:report}])})}
+function talk(s){var v=s.toLowerCase(),q=Q;Q="";if(pre(v,q))return;
+ if(/не\s+(сдела|выполн)/.test(v))return report();
+ if(/не хочу|не буду|пропуст|пропуск/.test(v))return skip();
+ if(/лифт/.test(v))return lift();
+ if(/лестниц|пешком/.test(v))return stairs();
+ if(/болит|боль|травм|колен|спин/.test(v))return why("pain");
+ if(/тяжел|слаб|устал|не могу/.test(v))return weak();
+ if(/отжим|подтяг|присед|планк|выпад|скручив|берпи|тренир|сдела|выполн|упражн/.test(v))return report();
+ if(/спасибо|благодар/.test(v))return say("Благодарность не нужна. Нужен результат.","",menu);
+ if(/привет|здравств|добр/.test(v))return say("Приветствие принято. Теперь к делу.","",menu);
+ if(/вода|воду|пил/.test(v))return say("Хорошо. Телу нужна вода. Но вода не заменяет подхода.","good",menu);
+ echo(s)}
+var Q="";
+function missing(){var t=today(),sn=S.seen||"",I=dayInfo(1),k=0;
+ if(!sn){S.seen=t;save();return null}
+ if(sn===t)return null;
+ for(var o=1;o<=14;o++){if(dstr(o)>sn)k++;else break}
+ S.seen=t;save();
+ if(I.dn.length>=I.n)return null;
+ res(-4*Math.min(Math.max(k,1),3));xp(-6*Math.min(Math.max(k,1),3),k>=2?"тебя не было несколько дней, и ты ни о чём не докладывала":k===1?"ты вчера не зашла и ничего не докладала":"ты вчера не довела план до конца");
+ if(k>=2)return ["Тебя не было "+k+" дн. Ни одного доклада, ни одного подхода.","Я записывал каждый день. Пусто.","Вернуться — это правильно. Но молчание стоило тебе моего уважения."];
+ if(k===1)return ["Вчера ты не зашла и ничего не докладала. Ни слова.","Для меня это значит одно: ты ничего не сделала.","Сегодня мы это исправим."];
+ if(!I.dn.length)return ["Вчера ты заходила, но не сделала ни одного упражнения.","Ты была здесь и ничего не отметила. Хуже, чем если бы тебя не было вовсе."];
+ return ["Вчера выполнено "+I.dn.length+" из "+I.n+". Не доведено до конца: "+I.nd.join(", ")+".","Половина дела — это не дело. Сегодня закрой всё."]}
+var RANKS=[[-9999,"Изгнанница"],[0,"Новобранец"],[80,"Кадет"],[200,"Офицер"],[360,"Командир"],[600,"Капитан"],[1000,"Адмирал"],[1600,"Гранд-адмирал"],[2400,"Равная Трауну"]];
+var PROMO=["","Ты снова ученица. Я готов снова считать тебя своей. Не заставляй меня пожалеть.","Ты больше не новобранец. Я начинаю видеть в тебе потенциал.","Офицер. Теперь и спрос с тебя другой.","Командир. Месяц дисциплины — это не случайность. Но это лишь начало.","Капитан. Мало кто доходит сюда. Не думай, что дальше будет проще.","Адмирал. Ты держишь стратегию, а не только отдельные дни.","Гранд-адмирал. Это моё собственное звание. Я не раздаю его просто так.","Я долго ждал этого момента. Ты больше не ученица. Я называю тебя равной."];
+function rk(x){var i=0;for(var j=0;j<RANKS.length;j++)if(x>=RANKS[j][0])i=j;return i}
+function xp(d,r){var a=rk(S.xp||0);if(d>0&&(S.xp||0)<0)return;S.xp=Math.max(-60,(S.xp||0)+d);var b=rk(S.xp);if(b>a)S.pend=b;else if(b<a){S.pend=-b-1;S.pendWhy=r||"";S.pendFrom=a;S.pendD=d;if(b===0)S.trial=0}save()}
+function promo(){if(S.lvMsg){var q=S.lvMsg;S.lvMsg=null;save();say(["НАГРУЗКА ПОВЫШЕНА: уровень "+q+".","Ты выполнила ещё неделю полных дней. Со завтрашнего дня в плане прибавится повторений и секунд. Привыкай: лёгкого больше не будет."],"good",menu);return true}if(S.pend==null)return false;var i=S.pend;S.pend=null;save();if(i<0){i=-i-1;if(i===0){var w0=S.pendWhy;S.pendWhy=null;say(["ЗВАНИЕ ПОНИЖЕНО: Изгнанница.",(w0?"Причина: "+w0+". ":"")+"Ты упала ниже нуля. Я больше не считаю тебя своей ученицей.","Пока ты изгнана, очки не растут. Чтобы вернуться, нужно пять полных дней подряд, без пропусков и отговорок.","Это не жестокость. Это граница."],"bad",menu);return true}var wy=S.pendWhy,fr=S.pendFrom,dd=S.pendD;S.pendWhy=null;say(["ЗВАНИЕ ПОНИЖЕНО: "+RANKS[i][1]+".",(wy?"Причина: "+wy+".":"Очки упали ниже порога.")+(dd?" Это стоило тебе "+(-dd)+" очков":"")+(fr!=null?", и звание «"+RANKS[fr][1]+"» стало «"+RANKS[i][1]+"».":"."),"Я не наказываю, я констатирую."+(fr!=null?" Чтобы вернуть «"+RANKS[fr][1]+"», нужно ещё "+(RANKS[fr][0]-(S.xp||0))+" очков.":" Верни.")],"bad",menu);return true}say(["ЗВАНИЕ ПОВЫШЕНО: "+RANKS[i][1]+".",PROMO[i]||"Новое звание."],"good",menu);return true}
+var OLDPLANS=[["Отжимания алмазные|10","Негативные отжимания|3 подхода по 5, вниз 5 сек","Приседания|30","Планка|45 сек","Выпады|10 на ногу","Скручивания|20","Отжимания от трубы|4 подхода по 15"],["Берпи|10","Негативные отжимания|3 подхода по 5, вниз 5 сек","Прыжки «звёздочка»|40","Планка|60 сек","Альпинист|30","Приседания|25","Отжимания от трубы|4 подхода по 15"],["Отжимания узким хватом|10","Негативные отжимания|3 подхода по 5, вниз 5 сек","Ягодичный мостик|25","Боковая планка|30 сек на сторону","Стойка у стены|45 сек","Выпады|12 на ногу","Отжимания от трубы|4 подхода по 15"]];
+function planOf(o){if(o===0)return plan();var d=dstr(o);return (S.snap&&S.snap[d])||OLDPLANS[(Math.floor(Date.now()/86400000)-o)%OLDPLANS.length]}
+function nudge(){if(DB&&DB.on)return false;var h=new Date().getHours(),n=Date.now(),D=day(),c=S.checks[today()]||[],pl=plan(),i;
+ if(h>=12&&!D.st&&!D.li&&!D.nh&&n-(S.askT||0)>7200000){S.askT=n;save();
+  say("Я не слышал о твоём подъёме сегодня. Ты поднималась по лестнице или ехала на лифте?","",function(){opts([{t:"По лестнице",f:stairs},{t:"На лифте",f:lift},{t:"Не выходила из дома",f:function(){D.nh=1;save();say("Хорошо. Тогда у тебя нет оправданий и для плана. Займись им.","",menu)}}])});return true}
+ if(h>=17&&S.last!==today()&&n-(S.askE||0)>10800000){for(i=0;i<pl.length;i++)if(!c[i]&&!(D.home&&/труб/.test(pl[i])))break;
+  if(i<pl.length){S.askE=n;save();var nm=pl[i].split("|")[0];say("Я заметил: «"+nm+"» до сих пор не отмечено.","bad",startDebrief);return true}}
+ return false}
+function whyY(){say("Назови причину. Только честно.","",function(){opts([{t:"Устала",f:function(){say("Вчерашняя усталость не оправдывает сегодняшнего отсутствия. Сегодня ты начнёшь с первого упражнения.","bad",ask)}},{t:"Не было времени",f:function(){say("Двадцать минут находятся всегда. Назначь время на сегодня и скажи мне.","bad",ask)}},{t:"Забыла",f:function(){say("Забыла. Значит, цель не стоит у тебя на первом месте. Поставь напоминание.","bad",ask)}},{t:"Болело",f:function(){res(6);say("Если болело, ты поступила разумно. Но нужно было доложить мне. Береги себя.","",ask)}}])})}
+function dstr(o){var d=new Date();d.setDate(d.getDate()-o);return today(d)}
+function day(){S.days=S.days||{};var t=today();return S.days[t]||(S.days[t]={st:0,li:0,sk:0})}
+function dayName(o){return o===0?"Сегодня":o===1?"Вчера":"Позавчера"}
+function dayInfo(o){var d=dstr(o),c=S.checks[d]||[],pl=planOf(o),dn=[],nd=[];
+ pl.forEach(function(x,i){(c[i]?dn:nd).push(x.split("|")[0])});
+ return {dn:dn,nd:nd,n:pl.length,D:(S.days&&S.days[d])||{st:0,li:0,sk:0},has:(S.checks[d]&&S.checks[d].length)||(S.days&&S.days[d])}}
+function dayAsk(o){var I=dayInfo(o),nm=dayName(o),t=[];
+ if(!I.dn.length&&!I.has){say([nm+" в моих записях пусто.",o===0?"Ни одного отмеченного упражнения. Исправь это сейчас.":"Либо ты не тренировалась, либо не отчиталась. Для меня это одно и то же."],"bad",menu);return}
+ t.push(nm+": выполнено "+I.dn.length+" из "+I.n+(I.dn.length?" — "+I.dn.join(", "):"")+".");
+ if(I.nd.length)t.push("Не выполнено: "+I.nd.join(", ")+".");
+ if(I.D.why&&I.D.why.length)t.push("Твои причины: "+I.D.why.join("; ")+".");
+ if(I.D.st||I.D.li||I.D.sk)t.push("Лестниц: "+I.D.st+", лифтов: "+I.D.li+", пропусков: "+I.D.sk+".");
+ t.push(I.nd.length?(o===0?"Ещё не поздно закрыть остальное.":"Прошлое не вернуть. Но выводы сделай."):"Полный план. Именно так и должно быть.");
+ say(t,I.nd.length?"bad":"good",menu)}
+function weekAsk(){var full=0,part=0,emp=0;for(var o=0;o<7;o++){var I=dayInfo(o);if(I.dn.length>=I.n)full++;else if(I.dn.length)part++;else emp++}
+ say(["За последние 7 дней: полностью выполнено — "+full+", частично — "+part+", пусто — "+emp+".","Серия: "+S.streak+".",full>=5?"Достойно. Держись.":full>=3?"Средне. Я ждал большего.":"Слабо. Это не тот результат, на который ты способна."],full>=5?"good":full>=3?"":"bad",menu)}
+function summary(){say("За какой период?","",function(){opts([{t:"Сегодня",f:function(){dayAsk(0)}},{t:"Вчера",f:function(){dayAsk(1)}},{t:"Позавчера",f:function(){dayAsk(2)}},{t:"Неделя",f:weekAsk}])})}
+function retro(o,v){var nm=dayName(o);
+ if(/не\s+(сдела|выполн|трениров|делала)|ничего|пропуст/.test(v)){res(-3);say(nm+" пропущен. Запомни это и не повторяй.","bad",menu);return}
+ say(nm+" я не видел твоего отчёта. Ты клянёшься, что сделала весь план?","",function(){opts([{t:"Клянусь",f:function(){markDay(o)}},{t:"Не весь",f:function(){say("Тогда не называй это выполненным планом. Часть — это не результат.","bad",menu)}}])})}
+function markDay(o){var d=dstr(o),pl=planOf(o),c=[];pl.forEach(function(){c.push(true)});S.checks[d]=c;
+ if(o===1&&S.last<d){S.streak=(S.last===dstr(2))?S.streak+1:1;S.last=d}
+ save();res(2);xp(4);say(["Принято. Записываю за "+dayName(o).toLowerCase()+".","Но отчитываться нужно в тот же день."],"",menu)}
+function echo(s){var t=s.length>70?s.slice(0,70)+"…":s;say(["Ты сказала: «"+t+"».","Я слышу тебя. Но мне нужен конкретный доклад: что сделано, а что нет?"],"",menu)}
+function pre(v,q){var m=v.match(/\d+/),n=m?parseInt(m[0],10):0;
+ if(q==="floors"&&n){if(n<=2)say("Мало. Но начало положено. В следующий раз больше.","",menu);else if(n<=5){res(2);say("Прилично. Продолжай.","good",menu)}else{res(4);say("Достойно. Именно так закаляют волю.","good",menu)}return true}
+ if(q==="trained"){if(/^(да|ага|угу|сдела|тренир)/.test(v)){say("Докажи. Отметь упражнения в плане ниже, я проверю.","",menu);return true}if(/^(нет|не )/.test(v)){notyet();return true}}
+ if(q==="dbreason"&&DB&&DB.on){var it2=DB.items[DB.pos],t2=plan()[it2].split("|")[0]+": "+v.slice(0,50);day().why=day().why||[];day().why.push(t2);DB.rs.push(t2);save();EXI=it2;return judge(v)}
+ if(/разбор|разобрат|объясн\S* пропуск/.test(v)){startDebrief();return true}
+ if(q==="excuse"||(EXRE.test(v)&&!/\d/.test(v))||/забыл|лень|не хотел|не было времени|некогда|настроени/.test(v))return judge(v);
+ if(/нагрузк|уровен/.test(v)){var fd=S.fd||0;say(["Уровень нагрузки: "+(S.lv||0)+".","Дней с полным планом до следующего уровня: "+(7-fd%7)+".","С каждым уровнем в плане прибавляется повторений и секунд."],"",menu);return true}
+ if(/звани|ранг/.test(v)){var xi=rk(S.xp||0),nx=RANKS[xi+1];say(["Твоё звание: "+RANKS[xi][1]+". Очков: "+(S.xp||0)+".",nx?"До «"+nx[1]+"» осталось "+(nx[0]-(S.xp||0))+".":"Выше звания нет.","Путь долгий. Равной мне становятся не за неделю."],"",menu);return true}
+ var o=/позавчера/.test(v)?2:/вчера/.test(v)?1:/сегодня/.test(v)?0:-1;
+ if(/недел/.test(v)&&/(сдела|выполн|трениров|итог|как|сколько|что)/.test(v)){weekAsk();return true}
+ if(o>=0&&/\?|что |сколько|скажи|покажи|какие|помнишь|записан|проверь|итог/.test(v)){dayAsk(o);return true}
+ if(o>=1&&/сдела|выполн|трениров|делала|не\s|ничего|пропуст/.test(v)){retro(o,v);return true}
+ if(/не\s+(сдела|выполн|делал)|ничего не|не\s*одного|ни\s*одного/.test(v)){
+  if(/ни\s*одного|не\s*одного|ничего|вообще|совсем|нисколько/.test(v)){say("Ни одного упражнения. Пустой план говорит сам за себя.","bad",skip);return true}
+  var kw=["гантел","румын","наклон","негатив","отжим","подтяг","присед","выпад","скручив","берпи","планк","прыж","альпинист","мостик","стойк","труб"],pl=plan();
+  for(var a=0;a<kw.length;a++)if(v.indexOf(kw[a])>-1)for(var b=0;b<pl.length;b++)if(pl[b].toLowerCase().indexOf(kw[a])>-1){notDone(b);return true}
+ }
+ if(/(все|всё)\s+(упражн\S*\s+)?(сдела|выполн)|сдела\S*\s+(все|всё)(\s|$)/.test(v)){allDone();return true}
+ var ex=[["отжим","отжиманий"],["подтяг","подтягиваний"],["присед","приседаний"],["выпад","выпадов"],["скручив","скручиваний"],["берпи","берпи"],["планк","планки"]];
+ for(var i=0;i<ex.length;i++){if(v.indexOf(ex[i][0])>-1&&n&&!/не\s+(сдела|выполн)/.test(v)){
+  if(n>=40){res(3);say("Мне нравится это число: "+n+" "+ex[i][1]+". Продолжай, но не останавливайся на нём.","good",menu)}
+  else if(n>=15){res(1);say(n+" "+ex[i][1]+". Принято. Но я знаю, на что ты способна: можно больше.","good",menu)}
+  else say("Всего "+n+"? Это разминка, а не тренировка. Добавь.","bad",menu);
+  return true}}
+ if(/как дела|как ты\b/.test(v)){say("Мои дела — это твои результаты. Докладывай.","",menu);return true}
+ if(/груст|настроени|стресс|тревож|плохо себя|тяжёлый день|тяжелый день/.test(v)){say(["Это не слабость, что день тяжёлый. Я не стану делать вид, что не слышу.","Если тебе по-настоящему плохо, отдохни и поговори с кем-то близким. Движение помогает, но через силу не заставляй себя."],"good",menu);return true}
+ if(/злой|строг|жестк|жёстк|достал|бесишь|ненавижу/.test(v)){say("Строгость — форма внимания. Я требую, потому что вижу, на что ты способна.","",menu);return true}
+ if(/получилось|отлично|молодец|горжусь|рекорд/.test(v)){res(2);say("Хорошо. Фиксирую. Но не останавливайся на достигнутом.","good",menu);return true}
+ if(/зачем|почему/.test(v)){say("Потому что цель, которую ты поставила, не исполнится сама. Сила — это решения, повторённые много раз.","",menu);return true}
+ if(/^(да|ага|угу|ок|окей|хорошо|ладно)[\s.!]*$/.test(v)){say("Хорошо. Тогда действуй, а не соглашайся.","",menu);return true}
+ return false}
+function sendTxt(){var i=$("txt"),s=i.value.trim();if(!s||busy)return;i.value="";touch();$("opts").innerHTML="";var m=document.createElement("div");m.className="b me";m.textContent=s;$("log").appendChild(m);logAdd("me",s);talk(s)}
+$("send").onclick=sendTxt;$("txt").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();sendTxt()}};
+$("reset").onclick=function(){touch();say("Ты хочешь стереть весь прогресс? Подумай, прежде чем отвечать.","bad",function(){opts([{t:"Да, стереть всё",f:function(){S=fresh();save();render();say("Начинаем с нуля. Посмотрим, чего ты стоишь.","",ask)}},{t:"Нет, оставь",f:function(){res(3);say("Разумно. Отступать с позиции, которую ты уже заняла, глупо.","good",menu)}}])})};
+init();
+</script>
+</body>
+</html>
